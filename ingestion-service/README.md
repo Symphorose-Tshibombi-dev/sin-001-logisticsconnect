@@ -79,12 +79,11 @@ mvn package
 java -jar target/ingestion-service.jar
 ```
 
-Listens on port `7050`. Currently just exposes `/health` — the actual CSV
-parsing/cleaning logic is a TODO.
+Listens on port `7050`. It exposes `/health`, `GET /hubs`, and `GET /hubs/{hubId}`. The hub endpoints return cleaned records loaded from `hubs-global.csv` at startup.
 
 ## Test
 
-No automated tests yet. Manually verify it's up:
+Automated tests cover CSV normalization, dropped rows, duplicate merging, and ambiguous unknown-province records. Run `mvn test` to execute them. Manually verify the service is up:
 
 ```
 curl http://localhost:7050/health   # -> OK
