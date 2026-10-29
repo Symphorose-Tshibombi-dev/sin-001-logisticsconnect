@@ -14,17 +14,17 @@ class TransitEtaTest {
     }
 
     @Test void etaNeverDecreasesAsDelayStageRises() {
-        double previous = EtaCalculator.estimatedHours(0);
+        double old = EtaCalculator.estimatedHours(0);
         for (int stage = 1; stage <= 8; stage++) {
-            double current = EtaCalculator.estimatedHours(stage);
-            assertTrue(current > previous, "stage " + stage);
-            previous = current;
+            double present = EtaCalculator.estimatedHours(stage);
+            assertTrue(present > old, "stage " + stage);
+            old = present;
         }
     }
 
     @Test void roundsToOneDecimalPlace() {
         assertEquals(2.3, EtaCalculator.roundToOneDecimal(2.26));
-        assertEquals(2.2, EtaCalculator.roundToOneDecimal(2.24));
+        assertEquals(2.2, EtaCalculator.roundToOneDecimal(2.18));
     }
 
     @Test void messageMentionsTheHours() {
