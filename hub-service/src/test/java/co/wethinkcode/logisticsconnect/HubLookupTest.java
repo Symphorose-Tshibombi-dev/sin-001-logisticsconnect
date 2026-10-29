@@ -1,0 +1,42 @@
+package co.wethinkcode.logisticsconnect;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class HubLookupTest {
+
+    @Test
+    void findsHubById() {
+        Map<String, Object> hub = Map.of("hub_id", "JHB-01", "province", "Gauteng");
+        assertEquals(hub, HubLookup.findById(List.of(hub), "JHB-01").orElseThrow());
+    }
+
+    @Test
+    void findsHubIdWithoutCaseSensitivity() {
+        Map<String, Object> hub = Map.of("hub_id", "JHB-01");
+        assertTrue(HubLookup.findById(List.of(hub), "jhb-01").isPresent());
+    }
+
+    @Test
+    void returnsEmptyWhenHubIdDoesNotExist() {
+        Map<String, Object> hub = Map.of("hub_id", "JHB-01");
+        assertTrue(HubLookup.findById(List.of(hub), "CPT-99").isEmpty());
+    }
+
+    @Test
+    void trimsWhitespaceFromRequestedHubId() {
+        Map<String, Object> hub = Map.of("hub_id", "JHB-01");
+        assertTrue(HubLookup.findById(List.of(hub), "  JHB-01  ").isPresent());
+    }
+
+    @Test
+    void returnsEmptyForNullInputs() {
+        assertTrue(HubLookup.findById(null, "JHB-01").isEmpty());
+        assertTrue(HubLookup.findById(List.of(), null).isEmpty());
+    }
+}
