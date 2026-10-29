@@ -1,46 +1,27 @@
-# DelayStageServiceApp
+# Delay Stage Service
 
 ## Overview
 
-Tracks the Transit Delay Stage (0-8, e.g. weather shutdowns).
-
-Part of the [LogisticsConnect](../README.md) project. Independent Maven module, no
-parent pom.
-
-MQ: this service publishes to the ActiveMQ topic `package-status-topic` — see [`../common/`](../common). Broker URL and topic name come from the common `co.wethinkcode.logisticsconnect.mq.MqConfig` class alongside it in this module.
-
-## Project structure
-
-```
-delay-stage-service/
-├── pom.xml
-└── src/main/java/co/wethinkcode/logisticsconnect/
-    ├── DelayStageServiceApp.java
-    └── mq/
-        └── MqConfig.java
-```
-
-## Build
-
-```
-mvn package
-```
+Tracks a delay stage for each hub. This service is part of LogisticsConnect Stage 2. It is an independent Maven module.
 
 ## Run
 
-```
+From this directory:
+
+```bash
+mvn test
+mvn package
 java -jar target/delay-stage-service.jar
 ```
 
-Listens on port `7052`.
+The service listens on port `7052`.
 
-## Test
+## Endpoints
 
-No automated tests yet. Manually verify it's up:
+- `GET /health` returns `OK`.
+- `GET /delay-stage/{hubId}` returns the normalized hub ID and current stage. A hub without an explicit stage defaults to stage `0`.
+- `POST /delay-stage/{hubId}` updates the stage. Send a JSON body such as `{"stage": 3}`.
 
-```
-curl http://localhost:7052/health   # -> OK
-```
+Valid stages are whole numbers from `0` through `8`. Invalid JSON, missing or non-integer stage values, and out-of-range values receive HTTP `400`.
 
-To add real tests, add JUnit 5 + the Surefire plugin to `pom.xml`, put tests under
-`src/test/java/co/wethinkcode/logisticsconnect/`, and run `mvn test`.
+Hub IDs are trimmed and normalized to uppercase for lookups. Stage values are currently stored in memory, so they reset when the service restarts. This is a prototype limitation, not durable persistence.
