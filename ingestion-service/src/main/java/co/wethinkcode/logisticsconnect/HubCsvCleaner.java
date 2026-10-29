@@ -141,5 +141,24 @@ public final class HubCsvCleaner {
         };
     }
 
+    private static String titleWords(String value) {
+        if (isPlaceholder(value)) return "";
+        String[] words = value.trim().replaceAll("\\s+", " ").toLowerCase(Locale.ROOT).split(" ");
+        StringBuilder result = new StringBuilder();
+        for (String word : words) {
+            if (word.isBlank()) continue;
+            if (result.length() > 0) result.append(' ');
+            result.append(word.substring(0, 1).toUpperCase(Locale.ROOT)).append(word.substring(1));
+        }
+        return result.toString();
+    }
 
+    private static Boolean normalizeBoolean(String value) {
+        if (value == null) return null;
+        return switch (value.trim().toLowerCase(Locale.ROOT)) {
+            case "y", "yes", "1", "true", "active" -> Boolean.TRUE;
+            case "n", "no", "0", "false", "inactive" -> Boolean.FALSE;
+            default -> null;
+        };
+    }
 }
