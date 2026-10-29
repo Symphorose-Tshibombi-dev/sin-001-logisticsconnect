@@ -21,4 +21,10 @@ class HubLookupTest {
         Map<String, Object> hub = Map.of("hub_id", "JHB-01");
         assertTrue(HubLookup.findById(List.of(hub), "jhb-01").isPresent());
     }
+
+    @Test
+    void returnsEmptyWhenHubIdDoesNotExist() {
+        Map<String, Object> hub = Map.of("hub_id", "JHB-01");
+        assertTrue(HubLookup.findById(List.of(hub), "CPT-99").isEmpty());
+    }
 }
