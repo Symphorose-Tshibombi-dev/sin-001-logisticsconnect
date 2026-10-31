@@ -2,15 +2,19 @@ package co.wethinkcode.logisticsconnect;
 
 import io.javalin.Javalin;
 
+import java.util.Map;
+
 public class IngestionServiceApp {
-
     public static void main(String[] args) {
-        Javalin app = Javalin.create().start(7050);
-
+        var hubs = HubCsvCleaner.loadDefault();
+        Javalin app = Javalin.create(config -> config.http.defaultContentType = "application/json");
         app.get("/health", ctx -> ctx.result("OK"));
-
-        // TODO: read and clean src/main/resources/hubs-global.csv (hubs, sorting centers, regional districts data —
-        // trim whitespace, fix casing, normalize dates/booleans) and expose the
-        // cleaned records here for the other services to consume.
+        app.get("/hubs", ctx -> ctx.json(hubs.stream().map(HubRecord::toJsonMap).toList()));
+        app.get("/hubs/{hubId}", ctx -> hubs.stream()
+                .filter(hub -> hub.hubId().equalsIgnoreCase(ctx.pathParam("hubId")))
+                .findFirst()
+                .ifPresentOrElse(hub -> ctx.json(hub.toJsonMap()),
+                        () -> ctx.status(404).json(Map.of("error", "Hub not found"))));
+        app.start(7050);
     }
 }
